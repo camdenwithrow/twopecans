@@ -4,15 +4,24 @@ import (
 	"net/http"
 
 	"github.com/a-h/templ"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 
-	"github.com/camdenwithrow/twopecans/templates"
+	"github.com/camdenwithrow/twopecans/db"
+	"github.com/camdenwithrow/twopecans/views"
 )
 
 func main() {
+	godotenv.Load()
+
+	database := db.OpenDatabase()
+	defer database.Close()
+
 	e := echo.New()
 
-	e.GET("/hello", HomeHandler)
+	e.Static("/static", "static")
+
+	e.GET("/", HomeHandler)
 
 	e.Logger.Fatal(e.Start(":4321"))
 }
@@ -24,5 +33,5 @@ func Render(ctx echo.Context, statusCode int, t templ.Component) error {
 }
 
 func HomeHandler(c echo.Context) error {
-	return Render(c, http.StatusOK, templates.Home())
+	return Render(c, http.StatusOK, views.Home())
 }

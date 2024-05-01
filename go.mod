@@ -5,6 +5,7 @@ go 1.22.1
 require (
 	github.com/a-h/templ v0.2.663 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/labstack/echo/v4 v4.12.0 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/libsql/sqlite-antlr4-parser v0.0.0-20240327125255-dbf53b6cbf06 // indirect

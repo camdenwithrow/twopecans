@@ -13,15 +13,22 @@ type User struct {
 	Name string
 }
 
+type Fraction struct {
+	Numerator   int
+	Denominator int
+}
+
 func OpenDatabase() *sql.DB {
-	url := ""
+	baseUrl := os.Getenv("TURSO_DATABASE_URL")
+	token := os.Getenv("TURSO_AUTH_TOKEN")
+
+	url := fmt.Sprintf("%s?authToken=%s", baseUrl, token)
 
 	db, err := sql.Open("libsql", url)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to open db %s: %s", url, err)
+		fmt.Fprintf(os.Stderr, "failed to open db %s: %s", baseUrl, err)
 		os.Exit(1)
 	}
-	defer db.Close()
 
 	return db
 }
