@@ -1,15 +1,14 @@
 package main
 
 import (
-	"net/http"
+	"log"
 	"os"
 
-	"github.com/a-h/templ"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 
 	"github.com/camdenwithrow/twopecans/db"
-	"github.com/camdenwithrow/twopecans/views"
+	"github.com/camdenwithrow/twopecans/handlers"
 )
 
 func main() {
@@ -21,27 +20,27 @@ func main() {
 		panic("NO ENVIRONMENT SET")
 	}
 
-	database := db.OpenDatabase()
-	defer database.Close()
+	config := db.SqliteConfig{
+		BaseUrl: os.Getenv("TURSO_DATABASE_URL"),
+		Token:   os.Getenv("TURSO_AUTH_TOKEN"),
+	}
+
+	sqlDB, err := db.NewSqliteDB(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sqlDB.Close()
+
+	sqlStore := db.NewSQLStore(sqlDB)
+
+	handler := handlers.New(env, sqlStore)
 
 	e := echo.New()
 
 	e.Static("/js", "static/js")
 	e.Static("/css", "css")
 
-	e.GET("/", HomeHandler(env))
+	e.GET("/", handler.HomeHandler)
 
 	e.Logger.Fatal(e.Start(":4321"))
-}
-
-func Render(ctx echo.Context, statusCode int, t templ.Component) error {
-	ctx.Response().Writer.WriteHeader(statusCode)
-	ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-	return t.Render(ctx.Request().Context(), ctx.Response().Writer)
-}
-
-func HomeHandler(env string) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		return Render(c, http.StatusOK, views.Home(env))
-	}
 }
