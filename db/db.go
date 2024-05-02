@@ -18,6 +18,24 @@ type Fraction struct {
 	Denominator int
 }
 
+type Ingredient struct {
+	name     string
+	quantity Fraction
+	unit     string
+}
+
+type Recipe struct {
+	ID          int
+	name        string
+	servings    int
+	cookTime    int
+	prepTime    int
+	imgUrl      string
+	sourceUrl   string
+	ingredients []Ingredient
+	directions  []string
+}
+
 func OpenDatabase() *sql.DB {
 	baseUrl := os.Getenv("TURSO_DATABASE_URL")
 	token := os.Getenv("TURSO_AUTH_TOKEN")
@@ -33,7 +51,7 @@ func OpenDatabase() *sql.DB {
 	return db
 }
 
-func queryUsers(db *sql.DB) {
+func QueryUsers(db *sql.DB) {
 	rows, err := db.Query("SELECT * FROM users")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
