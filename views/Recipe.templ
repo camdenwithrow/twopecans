@@ -1,0 +1,60 @@
+package views
+
+import "github.com/camdenwithrow/twopecans/views/layouts"
+
+var items = []string{"a", "b", "c", "d", "e", "f"}
+
+templ Recipe(env string, id string) {
+	<script type="text/javascript">
+        function handleClickIncreaseServings(event) {
+            const servingsAmtElement = document.getElementById("servings")
+            const servingsAmt = parseInt(servingsAmtElement.textContent)
+            servingsAmtElement.innerText = servingsAmt + 1
+        }
+        function handleClickDecreaseServings(event) {
+            const servingsAmtElement = document.getElementById("servings")
+            const servingsAmt = parseInt(servingsAmtElement.textContent)
+            servingsAmtElement.innerText = servingsAmt > 0 ? servingsAmt - 1 : 0
+        }
+    </script>
+	@layouts.Base(env) {
+		<div class="mx-auto max-w-screen-md h-screen flex justify-center pt-16 border">
+			<div>
+				<div class="flex gap-4">
+					<div class="max-w-48 aspect-square rounded-lg overflow-hidden">
+						<img src="/img/overnightoats.jpeg" class="w-full h-full object-cover"/>
+					</div>
+					<div class="flex flex-col justify-between pt-3">
+						<h1 class="text-5xl font-bold leading-none tracking-tight text-neutral-900">Overnight Oats</h1>
+						<div class="flex items-center">
+							<button onClick="handleClickDecreaseServings(this)" class="flex justify-center items-center w-8 h-8 rounded-full text-lg hover:bg-neutral-100">-</button>
+							<p class="px-1">
+								<span id="servings">4</span>
+								servings
+							</p>
+							<button onClick="handleClickIncreaseServings(this)" class="flex justify-center items-center w-8 h-8 rounded-full text-lg hover:bg-neutral-100">+</button>
+							<div class="pl-2">
+								<button id="servings-reset" class="hidden text-sm p-2 border rounded-lg">Reset</button>
+							</div>
+						</div>
+						<p class="text-neutral-500">Preptime: 120mins</p>
+					</div>
+				</div>
+				<div class="flex pt-6">
+					<div class="p-4 pl-0 max-w-[40%]">
+						<h3 class="pb-2 text-lg font-semibold text-neutral-600">Ingredients</h3>
+						<ul class="border-b">
+							for _, item := range items {
+								<li class="border-t py-1 text-neutral-600">{ item }</li>
+							}
+						</ul>
+					</div>
+					<div class="my-4 border-l border-neutral-500 min-h-full"></div>
+					<div class="p-4 pr-0">
+						<h3 class="text-lg font-semibold text-neutral-600">Directions</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}

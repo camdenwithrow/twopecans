@@ -38,9 +38,11 @@ func main() {
 	e := echo.New()
 
 	e.Static("/js", "static/js")
-	e.Static("/css", "css")
+	e.Static("/css", "static/css")
+	e.Static("/img", "static/img")
 
 	e.GET("/", handler.HomeHandler)
+	e.GET("/recipes/:id", handler.GetRecipeHandler)
 
 	e.Logger.Fatal(e.Start(":4321"))
 }
