@@ -54,10 +54,10 @@ func main() {
 	e.GET("/", handler.HomeHandler)
 	e.GET("/recipes/:id", handler.GetRecipeHandler)
 
-	// e.GET("/auth/:provider", handler.HandlerGoogleLogin)
-	// e.GET("/auth/:provider/callback", handler.HandleGoogleCallback)
-	// e.GET("/auth/logout/:provider", handler.HandleLogout)
-	e.GET("/login", handler.HandleLogin) 
+	e.GET("/auth/:provider", handler.HandleProviderLogin)
+	e.GET("/auth/:provider/callback", handler.HandleAuthCallback)
+	e.GET("/auth/logout/:provider", handler.HandleLogout)
+	e.GET("/login", handler.HandleLogin)
 
 	e.Logger.Fatal(e.Start(":4321"))
 }

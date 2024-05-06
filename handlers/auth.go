@@ -14,7 +14,7 @@ func (h *Handler) HandleLogin(c echo.Context) error {
 	return Render(c, http.StatusOK, views.Login(h.env))
 }
 
-func (h *Handler) HandleProviderLogin(c echo.Context) {
+func (h *Handler) HandleProviderLogin(c echo.Context) error {
 	// try to get the user without re-authenticating
 	if u, err := gothic.CompleteUserAuth(c.Response().Writer, c.Request()); err == nil {
 		log.Printf("User already authenticated! %v", u)
@@ -23,36 +23,39 @@ func (h *Handler) HandleProviderLogin(c echo.Context) {
 	} else {
 		gothic.BeginAuthHandler(c.Response().Writer, c.Request())
 	}
+	return nil
 }
 
-func (h *Handler) HandleAuthCallbackFunction(c echo.Context) {
+func (h *Handler) HandleAuthCallback(c echo.Context) error {
 	user, err := gothic.CompleteUserAuth(c.Response().Writer, c.Request())
 	if err != nil {
 		fmt.Fprintln(c.Response().Writer, err)
-		return
+		return err
 	}
 
-	err = h.auth.StoreUserSession(c.Response().Writer, c.Request(), user)
+	err = h.auth.StoreUserSession(c, user)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 
 	c.Response().Writer.Header().Set("Location", "/")
 	c.Response().Writer.WriteHeader(http.StatusTemporaryRedirect)
+	return nil
 }
 
-func (h *Handler) HandleLogout(c echo.Context) {
+func (h *Handler) HandleLogout(c echo.Context) error {
 	log.Println("Logging out...")
 
 	err := gothic.Logout(c.Response().Writer, c.Request())
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 
 	h.auth.RemoveUserSession(c.Response().Writer, c.Request())
 
 	c.Response().Writer.Header().Set("Location", "/")
 	c.Response().Writer.WriteHeader(http.StatusTemporaryRedirect)
+	return nil
 }
