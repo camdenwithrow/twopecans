@@ -7,8 +7,10 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 
+	"github.com/camdenwithrow/twopecans/config"
 	"github.com/camdenwithrow/twopecans/db"
 	"github.com/camdenwithrow/twopecans/handlers"
+	"github.com/camdenwithrow/twopecans/services"
 )
 
 func main() {
@@ -20,12 +22,12 @@ func main() {
 		panic("NO ENVIRONMENT SET")
 	}
 
-	config := db.SqliteConfig{
+	dbConfig := db.SqliteConfig{
 		BaseUrl: os.Getenv("TURSO_DATABASE_URL"),
 		Token:   os.Getenv("TURSO_AUTH_TOKEN"),
 	}
 
-	sqlDB, err := db.NewSqliteDB(config)
+	sqlDB, err := db.NewSqliteDB(dbConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,7 +35,15 @@ func main() {
 
 	sqlStore := db.NewSQLStore(sqlDB)
 
-	handler := handlers.New(env, sqlStore)
+	sessionStore := services.NewCookieStore(services.SessionOptions{
+		CookiesKey: config.Envs.CookiesAuthSecret,
+		MaxAge:     config.Envs.CookiesAuthAgeInSeconds,
+		Secure:     config.Envs.CookiesAuthIsSecure,
+		HttpOnly:   config.Envs.CookiesAuthIsHttpOnly,
+	})
+
+	authService := services.NewAuthService(sessionStore)
+	handler := handlers.New(env, sqlStore, authService)
 
 	e := echo.New()
 
@@ -43,6 +53,11 @@ func main() {
 
 	e.GET("/", handler.HomeHandler)
 	e.GET("/recipes/:id", handler.GetRecipeHandler)
+
+	// e.GET("/auth/:provider", handler.HandlerGoogleLogin)
+	// e.GET("/auth/:provider/callback", handler.HandleGoogleCallback)
+	// e.GET("/auth/logout/:provider", handler.HandleLogout)
+	e.GET("/login", handler.HandleLogin) 
 
 	e.Logger.Fatal(e.Start(":4321"))
 }
