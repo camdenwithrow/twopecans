@@ -27,6 +27,7 @@ $ air
 ### Resources
 
 Go: https://go.dev/doc/
+Learn Go: https://go.dev/tour/welcome/1
 Echo: https://echo.labstack.com/
 Templ: https://templ.guide/
 Air: https://github.com/cosmtrek/air
