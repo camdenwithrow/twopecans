@@ -26,11 +26,11 @@ $ air
 
 ### Resources
 
-Go: https://go.dev/doc/
-Learn Go: https://go.dev/tour/welcome/1
-Echo: https://echo.labstack.com/
-Templ: https://templ.guide/
-Air: https://github.com/cosmtrek/air
-Tailwind: https://tailwindcss.com/docs/installation
-Sqlite3: https://sqlite.org/docs.html
-Turso: https://docs.turso.tech/introduction
+- Go: https://go.dev/doc/
+- Learn Go: https://go.dev/tour/welcome/1
+- Echo: https://echo.labstack.com/
+- Templ: https://templ.guide/
+- Air: https://github.com/cosmtrek/air
+- Tailwind: https://tailwindcss.com/docs/installation
+- Sqlite3: https://sqlite.org/docs.html
+- Turso: https://docs.turso.tech/introduction
