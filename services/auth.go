@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/camdenwithrow/twopecans/config"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
-	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
 )
 
@@ -20,14 +20,9 @@ func NewAuthService(store sessions.Store) *AuthService {
 	gothic.Store = store
 
 	goth.UseProviders(
-		github.New(
-			config.Envs.GithubClientID,
-			config.Envs.GithubClientSecret,
-			buildCallbackURL("github"),
-		),
 		google.New(
-			config.Envs.GoogleClientID,
-			config.Envs.GoogleClientSecret,
+			os.Getenv("GOOGLE_KEY"),
+			os.Getenv("GOOGLE_SECRET"),
 			buildCallbackURL("google"),
 		),
 	)

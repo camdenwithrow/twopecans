@@ -33,7 +33,7 @@ func main() {
 	}
 	defer sqlDB.Close()
 
-	sqlStore := db.NewSQLStore(sqlDB)
+	store := db.NewSQLStore(sqlDB)
 
 	sessionStore := services.NewCookieStore(services.SessionOptions{
 		CookiesKey: config.Envs.CookiesAuthSecret,
@@ -43,7 +43,7 @@ func main() {
 	})
 
 	authService := services.NewAuthService(sessionStore)
-	handler := handlers.New(env, sqlStore, authService)
+	handler := handlers.New(env, store, authService)
 
 	e := echo.New()
 

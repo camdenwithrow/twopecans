@@ -1,22 +1,30 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/camdenwithrow/twopecans/views"
 	"github.com/labstack/echo/v4"
 	"github.com/markbates/goth/gothic"
+
+	"github.com/camdenwithrow/twopecans/views"
 )
+
+type ProviderContextKey struct{}
 
 func (h *Handler) HandleLogin(c echo.Context) error {
 	return Render(c, http.StatusOK, views.Login(h.env))
 }
 
 func (h *Handler) HandleProviderLogin(c echo.Context) error {
+	provider := c.Param("provider")
+	r := c.Request().WithContext(context.WithValue(context.Background(), gothic.ProviderParamKey, provider))
+	// if p, ok := req.Context().Value(ProviderParamKey).(string); ok {
+
 	// try to get the user without re-authenticating
-	if u, err := gothic.CompleteUserAuth(c.Response().Writer, c.Request()); err == nil {
+	if u, err := gothic.CompleteUserAuth(c.Response().Writer, r); err == nil {
 		log.Printf("User already authenticated! %v", u)
 
 		views.Login(h.env)
