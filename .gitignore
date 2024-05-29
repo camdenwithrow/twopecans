@@ -1,3 +1,6 @@
 tmp/
+bin/
 node_modules
 *_templ.go
+.env
+output.css
