@@ -1,0 +1,9 @@
+FROM golang:latest
+WORKDIR /
+RUN go install github.com/air-verse/air@latest
+RUN go install github.com/a-h/templ/cmd/templ@latest
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . /app
+EXPOSE 4321
+CMD ["air", "-c", "/app/.air.toml"]
