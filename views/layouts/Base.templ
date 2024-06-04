@@ -1,0 +1,27 @@
+package layouts
+
+templ Base(env string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Two Almonds</title>
+			<script src="/js/htmx.min.js"></script>
+			switch env {
+				case "dev":
+					<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+					<script src="/js/tailwindcss@3.4.3.min.js"></script>
+				case "prod":
+					<script src="/js/alpinejs@3.13.10.min.js" defer></script>
+					<link href="./output.css" rel="stylesheet"/>
+				default:
+					<script src="/js/alpinejs@3.13.10.min.js" defer></script>
+					<link href="./output.css" rel="stylesheet"/>
+			}
+		</head>
+		<body>
+			{ children... }
+		</body>
+	</html>
+}

@@ -1,0 +1,16 @@
+package components
+
+templ Card() {
+	<div class="max-w-sm bg-white border rounded-lg shadow p-7 border-neutral-200">
+		{ children... }
+	</div>
+}
+
+templ CardTitle(title string) {
+}
+
+templ CardTitleWithLink(title string, link string) {
+	<a href={ templ.URL(link) } class="block mb-3">
+		@CardTitle(title)
+	</a>
+}
