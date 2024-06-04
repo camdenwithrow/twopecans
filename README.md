@@ -4,25 +4,9 @@ A recipe organization tool that makes it easy to create grocery lists and automa
 
 ### Setup
 
-Install Go: https://go.dev/dl/
+install docker: https://www.docker.com/get-started/
 
-Install go-task for running prebuilt commands
-
-```bash
-$ go install github.com/cosmtrek/air@latest
-```
-
-Install dependencies
-
-```bash
-$ go mod tidy
-```
-
-Run development server
-
-```bash
-$ air
-```
+run docker compose up
 
 ### Resources
 
