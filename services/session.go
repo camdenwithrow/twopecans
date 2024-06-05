@@ -1,13 +1,10 @@
 package services
 
 import (
-	"github.com/camdenwithrow/twopecans/config"
 	"github.com/gorilla/sessions"
 )
 
-const (
-	SessionName = "session"
-)
+const SessionName = "session"
 
 type SessionOptions struct {
 	CookiesKey string
@@ -17,10 +14,10 @@ type SessionOptions struct {
 }
 
 var CookieConfig = SessionOptions{
-	CookiesKey: config.CookiesAuthSecret,
+	CookiesKey: cfg.CookiesAuthSecret,
 	MaxAge:     60 * 60 * 24 * 30,
 	HttpOnly:   true,
-	Secure:     config.Environment == "production",
+	Secure:     cfg.Environment == "production",
 }
 
 func NewCookieStore(opts SessionOptions) *sessions.CookieStore {

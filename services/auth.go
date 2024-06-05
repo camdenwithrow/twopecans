@@ -17,6 +17,8 @@ import (
 
 type AuthService struct{}
 
+var cfg = config.GetConfig()
+
 func NewAuthService(store sessions.Store) *AuthService {
 	gothic.Store = store
 
@@ -96,5 +98,5 @@ func RequireAuth(handlerFunc http.HandlerFunc, auth *AuthService) http.HandlerFu
 }
 
 func buildCallbackURL(provider string) string {
-	return fmt.Sprintf("%s:%s/auth/%s/callback", config.PublicHost, config.Port, provider)
+	return fmt.Sprintf("%s:%s/auth/%s/callback", cfg.PublicHost, cfg.Port, provider)
 }

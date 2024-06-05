@@ -18,11 +18,11 @@ const (
 )
 
 func main() {
-	config.LoadConfig()
+	cfg := config.GetConfig()
 
 	sqlDB, err := db.NewSqliteDB(db.SqliteConfig{
-		BaseUrl: config.DBUrl,
-		Token:   config.DBAuthToken,
+		BaseUrl: cfg.DBUrl,
+		Token:   cfg.DBAuthToken,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -34,7 +34,7 @@ func main() {
 	sessionStore := services.NewCookieStore(services.CookieConfig)
 
 	authService := services.NewAuthService(sessionStore)
-	handler := handlers.New(config.Environment, store, authService)
+	handler := handlers.New(cfg.Environment, store, authService)
 
 	e := echo.New()
 
@@ -50,5 +50,5 @@ func main() {
 	e.GET("/auth/logout/:provider", handler.HandleLogout)
 	e.GET("/login", handler.HandleLogin)
 
-	e.Logger.Fatal(e.Start(config.Port))
+	e.Logger.Fatal(e.Start(cfg.Port))
 }
