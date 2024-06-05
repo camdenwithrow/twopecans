@@ -24,13 +24,13 @@ func NewAuthService(store sessions.Store) *AuthService {
 
 	goth.UseProviders(
 		google.New(
-			config.GoogleClientID,
-			config.GoogleClientSecret,
+			cfg.GoogleClientID,
+			cfg.GoogleClientSecret,
 			buildCallbackURL("google"),
 		),
 		github.New(
-			config.GithubClientID,
-			config.GoogleClientSecret,
+			cfg.GithubClientID,
+			cfg.GoogleClientSecret,
 			buildCallbackURL("github"),
 		),
 	)
@@ -52,14 +52,14 @@ func (s *AuthService) GetSessionUser(r *http.Request) (goth.User, error) {
 	return u.(goth.User), nil
 }
 
-func (s *AuthService) StoreUserSession(c echo.Context, user goth.User) error {
+func (s *AuthService) StoreUserSession(w http.ResponseWriter, r *http.Request, user goth.User) error {
 	// Get a session. We're ignoring the error resulted from decoding an
 	// existing session: Get() always returns a session, even if empty.
-	session, _ := gothic.Store.Get(c.Request(), SessionName)
+	session, _ := gothic.Store.Get(r, SessionName)
 
 	session.Values["user"] = user
 
-	err := session.Save(c.Request(), c.Response().Writer)
+	err := session.Save(r, w)
 	if err != nil {
 		return err
 	}
@@ -82,18 +82,20 @@ func (s *AuthService) RemoveUserSession(w http.ResponseWriter, r *http.Request) 
 	session.Save(r, w)
 }
 
-func RequireAuth(handlerFunc http.HandlerFunc, auth *AuthService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func RequireAuth(handlerFunc echo.HandlerFunc, auth *AuthService) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		w, r := c.Response().Writer, c.Request()
 		session, err := auth.GetSessionUser(r)
 		if err != nil {
 			log.Println("User is not authenticated!")
 			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
-			return
+			return nil
 		}
 
 		log.Printf("user is authenticated! user: %v!", session.FirstName)
 
-		handlerFunc(w, r)
+		handlerFunc(c)
+		return nil
 	}
 }
 
