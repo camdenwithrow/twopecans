@@ -1,4 +1,4 @@
-root = "./app"
+root = "."
 testdata_dir = "testdata"
 tmp_dir = "bin"
 

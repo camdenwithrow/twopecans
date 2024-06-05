@@ -18,7 +18,7 @@ func (h *Handler) HandleLogin(c echo.Context) error {
 	return Render(c, http.StatusOK, views.Login(h.env))
 }
 
-func (h *Handler) HandleProviderLogin(c echo.Context) error {
+func (h *Handler) HandleProviderLogin(w http.ResponseWriter, r *http.Request) error {
 	provider := c.Param("provider")
 	r := c.Request().WithContext(context.WithValue(context.Background(), gothic.ProviderParamKey, provider))
 	// if p, ok := req.Context().Value(ProviderParamKey).(string); ok {
@@ -26,10 +26,8 @@ func (h *Handler) HandleProviderLogin(c echo.Context) error {
 	// try to get the user without re-authenticating
 	if u, err := gothic.CompleteUserAuth(c.Response().Writer, r); err == nil {
 		log.Printf("User already authenticated! %v", u)
-
-		views.Login(h.env)
 	} else {
-		gothic.BeginAuthHandler(c.Response().Writer, c.Request())
+		gothic.BeginAuthHandler(c.Response().Writer, r)
 	}
 	return nil
 }
@@ -41,7 +39,7 @@ func (h *Handler) HandleAuthCallback(c echo.Context) error {
 		return err
 	}
 
-	err = h.auth.StoreUserSession(c, user)
+	err = h.auth.StoreUserSession(c.Response().Writer, c.Request(), user)
 	if err != nil {
 		log.Println(err)
 		return err

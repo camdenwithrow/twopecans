@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/labstack/echo/v4"
@@ -50,5 +51,5 @@ func main() {
 	e.GET("/auth/logout/:provider", handler.HandleLogout)
 	e.GET("/login", handler.HandleLogin)
 
-	e.Logger.Fatal(e.Start(cfg.Port))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", cfg.Port)))
 }
