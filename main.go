@@ -2,9 +2,7 @@ package main
 
 import (
 	"log"
-	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 
 	"github.com/camdenwithrow/twopecans/config"
@@ -13,21 +11,19 @@ import (
 	"github.com/camdenwithrow/twopecans/services"
 )
 
+const (
+	DEV  = "development"
+	TEST = "test"
+	PROD = "production"
+)
+
 func main() {
-	godotenv.Load()
+	config.LoadConfig()
 
-	env := os.Getenv("ENVIRONMENT")
-
-	if env != "dev" && env != "prod" {
-		panic("NO ENVIRONMENT SET")
-	}
-
-	dbConfig := db.SqliteConfig{
-		BaseUrl: os.Getenv("TURSO_DATABASE_URL"),
-		Token:   os.Getenv("TURSO_AUTH_TOKEN"),
-	}
-
-	sqlDB, err := db.NewSqliteDB(dbConfig)
+	sqlDB, err := db.NewSqliteDB(db.SqliteConfig{
+		BaseUrl: config.DBUrl,
+		Token:   config.DBAuthToken,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,15 +31,10 @@ func main() {
 
 	store := db.NewSQLStore(sqlDB)
 
-	sessionStore := services.NewCookieStore(services.SessionOptions{
-		CookiesKey: config.Envs.CookiesAuthSecret,
-		MaxAge:     config.Envs.CookiesAuthAgeInSeconds,
-		Secure:     config.Envs.CookiesAuthIsSecure,
-		HttpOnly:   config.Envs.CookiesAuthIsHttpOnly,
-	})
+	sessionStore := services.NewCookieStore(services.CookieConfig)
 
 	authService := services.NewAuthService(sessionStore)
-	handler := handlers.New(env, store, authService)
+	handler := handlers.New(config.Environment, store, authService)
 
 	e := echo.New()
 
@@ -59,5 +50,5 @@ func main() {
 	e.GET("/auth/logout/:provider", handler.HandleLogout)
 	e.GET("/login", handler.HandleLogin)
 
-	e.Logger.Fatal(e.Start(":4321"))
+	e.Logger.Fatal(e.Start(config.Port))
 }

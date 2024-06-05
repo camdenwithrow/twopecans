@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
-	"github.com/camdenwithrow/twopecans/config"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
+	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
+
+	"github.com/camdenwithrow/twopecans/config"
 )
 
 type AuthService struct{}
@@ -21,9 +22,14 @@ func NewAuthService(store sessions.Store) *AuthService {
 
 	goth.UseProviders(
 		google.New(
-			os.Getenv("GOOGLE_KEY"),
-			os.Getenv("GOOGLE_SECRET"),
+			config.GoogleClientID,
+			config.GoogleClientSecret,
 			buildCallbackURL("google"),
+		),
+		github.New(
+			config.GithubClientID,
+			config.GoogleClientSecret,
+			buildCallbackURL("github"),
 		),
 	)
 
@@ -90,5 +96,5 @@ func RequireAuth(handlerFunc http.HandlerFunc, auth *AuthService) http.HandlerFu
 }
 
 func buildCallbackURL(provider string) string {
-	return fmt.Sprintf("%s:%s/auth/%s/callback", config.Envs.PublicHost, config.Envs.Port, provider)
+	return fmt.Sprintf("%s:%s/auth/%s/callback", config.PublicHost, config.Port, provider)
 }

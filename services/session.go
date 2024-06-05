@@ -1,6 +1,9 @@
 package services
 
-import "github.com/gorilla/sessions"
+import (
+	"github.com/camdenwithrow/twopecans/config"
+	"github.com/gorilla/sessions"
+)
 
 const (
 	SessionName = "session"
@@ -9,8 +12,15 @@ const (
 type SessionOptions struct {
 	CookiesKey string
 	MaxAge     int
-	HttpOnly   bool // Should be true if the site is served over HTTP (development environment)
-	Secure     bool // Should be true if the site is served over HTTPS (production environment)
+	HttpOnly   bool
+	Secure     bool // Should be true if the site is served over HTTPS (prod)
+}
+
+var CookieConfig = SessionOptions{
+	CookiesKey: config.CookiesAuthSecret,
+	MaxAge:     60 * 60 * 24 * 30,
+	HttpOnly:   true,
+	Secure:     config.Environment == "production",
 }
 
 func NewCookieStore(opts SessionOptions) *sessions.CookieStore {
